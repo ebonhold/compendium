@@ -1,0 +1,52 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.header {
+  padding: 24px 0 8px;
+  border-bottom: 1px solid #2a2a3a;
+  margin-bottom: 0;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  color: #c6a0f0;
+  letter-spacing: 0.02em;
+}
+
+.header p {
+  margin: 4px 0 0;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  position: relative;
+  padding-top: 16px;
+}
+
+.panelActive {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.panelHidden {
+  visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+}
