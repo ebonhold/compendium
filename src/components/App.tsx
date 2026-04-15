@@ -17,7 +17,7 @@ export function App() {
     <div className={styles.app}>
       <header className={styles.header}>
         <h1>Ebonhold Compendium</h1>
-        <p>Frost Death Knight — DPS delta vs baseline</p>
+        <p>Frost Death Knight</p>
       </header>
       <TabBar tabs={TABS} activeTab={activeTab} onTabChange={handleTabChange} />
       <main className={styles.main}>

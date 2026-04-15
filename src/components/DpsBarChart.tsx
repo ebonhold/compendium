@@ -7,12 +7,12 @@ import {
   CartesianGrid,
   Tooltip,
   ReferenceLine,
-  Cell,
   LabelList,
+  Rectangle,
 } from 'recharts';
 import type { ChartEntry, ChartItemRef } from '../lib/parseProfileset';
 
-const Y_AXIS_WIDTH = 300;
+const Y_AXIS_WIDTH = 600;
 
 interface YTickProps {
   x?: number;
@@ -50,13 +50,33 @@ function WowheadYTick({ x = 0, y = 0, payload, entries }: YTickProps) {
           alignItems: 'center',
           justifyContent: 'flex-end',
           height: '100%',
-          fontSize: 12,
+          fontSize: 16,
           overflow: 'hidden',
         }}
       >
         {entry ? renderItems(entry.items) : payload?.value}
       </div>
     </foreignObject>
+  );
+}
+
+interface BarShapeProps {
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  payload?: ChartEntry;
+}
+
+function DeltaBar({ x = 0, y = 0, width = 0, height = 0, payload }: BarShapeProps) {
+  return (
+    <Rectangle
+      x={x}
+      y={y}
+      width={Math.max(0, width)}
+      height={Math.max(0, height)}
+      fill={(payload?.delta ?? 0) >= 0 ? '#4caf50' : '#f44336'}
+    />
   );
 }
 
@@ -123,16 +143,13 @@ export function DpsBarChart({ entries }: Props) {
           }}
         />
         <ReferenceLine x={0} stroke="#888" strokeDasharray="4 2" />
-        <Bar dataKey="percentDiff" isAnimationActive={false}>
+        <Bar dataKey="percentDiff" isAnimationActive={false} barSize={18} shape={<DeltaBar />}>
           <LabelList
             dataKey="absoluteDps"
             position="right"
             style={{ fontSize: 11, fill: '#ccc' }}
             formatter={(v: number) => Math.round(v).toLocaleString()}
           />
-          {entries.map((e, i) => (
-            <Cell key={i} fill={e.delta >= 0 ? '#4caf50' : '#f44336'} />
-          ))}
         </Bar>
       </BarChart>
     </div>

@@ -14,3 +14,7 @@ body {
 #root {
   min-height: 100vh;
 }
+
+a[href*="wowhead.com"] {
+  text-decoration: none !important;
+}
