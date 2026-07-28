@@ -11,6 +11,7 @@ import {
   Rectangle,
 } from 'recharts';
 import type { ChartEntry, ChartItemRef } from '../lib/parseProfileset';
+import styles from '../styles/DpsBarChart.module.css';
 
 const Y_AXIS_WIDTH = 600;
 
@@ -30,7 +31,7 @@ function WowheadYTick({ x = 0, y = 0, payload, entries }: YTickProps) {
   const renderItems = (items: ChartItemRef[]) =>
     items.map((item, i) => (
       <span key={item.itemId}>
-        {i > 0 && <span style={{ color: '#666' }}> + </span>}
+        {i > 0 && <span className={styles.itemSeparator}> + </span>}
         <a
           href={`https://www.wowhead.com/item=${item.itemId}?bonus=${item.bonusId?.join(':')}`}
         >
@@ -46,18 +47,7 @@ function WowheadYTick({ x = 0, y = 0, payload, entries }: YTickProps) {
       width={Y_AXIS_WIDTH}
       height={tickHeight}
     >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'flex-end',
-          height: '100%',
-          fontSize: 16,
-          overflow: 'hidden',
-        }}
-      >
-        {entry ? renderItems(entry.items) : payload?.value}
-      </div>
+      <div className={styles.yTick}>{entry ? renderItems(entry.items) : payload?.value}</div>
     </foreignObject>
   );
 }
@@ -71,13 +61,14 @@ interface BarShapeProps {
 }
 
 function DeltaBar({ x = 0, y = 0, width = 0, height = 0, payload }: BarShapeProps) {
+  const positive = (payload?.delta ?? 0) >= 0;
   return (
     <Rectangle
       x={x}
       y={y}
       width={Math.max(0, width)}
       height={Math.max(0, height)}
-      fill={(payload?.delta ?? 0) >= 0 ? '#4caf50' : '#f44336'}
+      className={positive ? styles.barPositive : styles.barNegative}
     />
   );
 }
@@ -113,7 +104,7 @@ export function DpsBarChart({ entries }: Props) {
   const chartData = entries;
 
   return (
-    <div ref={containerRef} style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
+    <div ref={containerRef} className={styles.container}>
       <BarChart
         layout="vertical"
         width={containerWidth}
@@ -149,7 +140,7 @@ export function DpsBarChart({ entries }: Props) {
           <LabelList
             dataKey="absoluteDps"
             position="right"
-            style={{ fontSize: 11, fill: '#ccc' }}
+            className={styles.dpsLabel}
             formatter={(v: number) => Math.round(v).toLocaleString()}
           />
         </Bar>

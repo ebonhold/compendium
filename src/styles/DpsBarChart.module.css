@@ -1,0 +1,31 @@
+.container {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.itemSeparator {
+  color: #666;
+}
+
+.yTick {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  font-size: clamp(.5rem, 16px, 1rem);
+  overflow: hidden;
+}
+
+.dpsLabel {
+  font-size: 11px;
+  fill: #ccc;
+}
+
+.barPositive {
+  fill: #4caf50;
+}
+
+.barNegative {
+  fill: #f44336;
+}
