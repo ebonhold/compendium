@@ -9,6 +9,7 @@ body {
   color: #e2e2e2;
   min-height: 100vh;
   overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 #root {
@@ -17,4 +18,8 @@ body {
 
 a[href*="wowhead.com"] {
   text-decoration: none !important;
+}
+
+del {
+  background-image: none !important;
 }

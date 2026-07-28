@@ -1,8 +1,10 @@
 .tabBar {
   display: flex;
   gap: 2px;
-  padding: 12px 0 6px;
+  padding: 12px 0 0;
   overflow-x: hidden;
+  overflow-y: hidden;
+  border-bottom: 2px solid #C41E3A;
 }
 
 .tab,
@@ -12,8 +14,7 @@
   background: transparent;
   color: #aaa;
   font-size: 0.9rem;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
+  cursor: pointer;  
   margin-bottom: -2px;
   white-space: nowrap;
   transition: color 0.15s;
@@ -24,11 +25,7 @@
 }
 
 .tabActive {
-  color: #c6a0f0;
-  border-bottom-color: #c6a0f0;
+  background: #C41E3A;
+  border-bottom: 2px solid #C41E3A;
   font-weight: 600;
-}
-
-.q4 {
-  text-decoration: none;
 }
