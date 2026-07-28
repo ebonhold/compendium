@@ -1,6 +1,9 @@
 export interface GearItem {
   item_id: number;
   item_level: number;
+  bonus_id?: number[];
+  gem_id?: number;
+  enchant_id?: number;
 }
 
 export interface ProfilesetResult {

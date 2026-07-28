@@ -22,6 +22,8 @@ interface YTickProps {
 }
 
 function WowheadYTick({ x = 0, y = 0, payload, entries }: YTickProps) {
+  console.log(payload);
+  console.log(entries);
   const entry = entries.find(e => e.label === payload?.value);
   const tickHeight = 35;
 
@@ -30,9 +32,9 @@ function WowheadYTick({ x = 0, y = 0, payload, entries }: YTickProps) {
       <span key={item.itemId}>
         {i > 0 && <span style={{ color: '#666' }}> + </span>}
         <a
-          href={`https://www.wowhead.com/item=${item.itemId}`}
+          href={`https://www.wowhead.com/item=${item.itemId}?bonus=${item.bonusId?.join(':')}`}
         >
-          {item.name}{item.nonDominantIlvl ? ` (${item.itemLevel})` : ''}
+          {item.name} ({item.itemLevel})
         </a>
       </span>
     ));
