@@ -4,17 +4,24 @@
   overflow-y: auto;
 }
 
-.itemSeparator {
-  color: #666;
-}
-
 .yTick {
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
   height: 100%;
-  font-size: clamp(.5rem, 16px, 1rem);
+  padding: 6px 0;
   overflow: hidden;
+}
+
+.yTickLine {
+  width: 100%;
+  line-height: 18px;
+  font-size: 12px;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .dpsLabel {

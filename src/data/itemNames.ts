@@ -1,4 +1,4 @@
-// Item name map covering all 92 item IDs in the profileset JSON files.
+// Item name map covering all 99 item IDs in the profileset JSON files.
 // Names resolved from the Wowhead XML feed. Regenerate with: node scripts/fetch-item-names.mjs
 export const itemNames: Record<number, string> = {
   49802: "Garfrost's Two-Ton Hammer",
@@ -11,6 +11,7 @@ export const itemNames: Record<number, string> = {
   151307: "Void Stalker's Contract",
   151327: "Girdle of the Shadowguard",
   151328: "Vambraces of Lost Hope",
+  151329: "Breastplate of the Dark Touch",
   151333: "Crown of the Dark Envoy",
   193701: "Algeth'ar Puzzle Box",
   193708: "Platinum Star Band",
@@ -36,6 +37,7 @@ export const itemNames: Record<number, string> = {
   245829: "Darkmoon Deck: Hunt",
   245846: "Darkmoon Deck: Rot",
   249277: "Bellamy's Final Judgement",
+  249281: "Blade of the Final Twilight",
   249295: "Turalyon's False Echo",
   249296: "Alah'endal, the Dawnsong",
   249307: "Emberborn Grasps",
@@ -59,10 +61,15 @@ export const itemNames: Record<number, string> = {
   249915: "Extinction Guards",
   249919: "Sin'dorei Band of Hope",
   249920: "Eye of Midnight",
+  249968: "Relentless Rider's Dreadthorns",
+  249969: "Relentless Rider's Legguards",
+  249970: "Relentless Rider's Crown",
+  249971: "Relentless Rider's Bonegrasps",
   249973: "Relentless Rider's Cuirass",
   250226: "Latch's Crooked Hook",
   250227: "Kroluk's Warbanner",
   250241: "Mark of Light",
+  250247: "Amulet of the Abyssal Hymn",
   250256: "Heart of Wind",
   250258: "Vessel of Tortured Souls",
   251078: "Emberdawn Defender",
