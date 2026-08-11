@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import type { SimcraftFile } from '../types/simcraft';
 import { parseProfileset, type ParsedProfileset } from './parseProfileset';
 import { StaticItemNameResolver } from './itemNameResolver';
+import { loadBaselineDps } from './baseline';
 import { itemNames } from '../data/itemNames';
 import type { TabConfig } from './tabs';
 
@@ -30,14 +31,18 @@ export function useProfilesetData(config: TabConfig): UseProfilesetDataResult {
     setLoading(true);
     setError(null);
 
-    fetch(`${import.meta.env.BASE_URL}data/${config.filename}`)
-      .then(res => {
+    // The baseline is a separate single-actor sim shared by every tab; it is
+    // fetched once per session, so this resolves immediately after the first tab.
+    Promise.all([
+      fetch(`${import.meta.env.BASE_URL}data/${config.filename}`).then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json() as Promise<SimcraftFile>;
-      })
-      .then(json => {
+      }),
+      loadBaselineDps(),
+    ])
+      .then(([json, baselineDps]) => {
         if (cancelled) return;
-        const parsed = parseProfileset(json, resolver, config.filterCulled);
+        const parsed = parseProfileset(json, resolver, config.filterCulled, baselineDps);
         cache.set(config.id, parsed);
         setData(parsed);
         setLoading(false);

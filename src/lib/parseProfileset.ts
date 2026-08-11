@@ -28,6 +28,8 @@ export function parseProfileset(
   data: SimcraftFile,
   resolver: ItemNameResolver,
   filterCulled: boolean,
+  /** DPS of the single-actor baseline sim; every delta is measured against it. */
+  baselineDps: number,
 ): ParsedProfileset {
   const results = data.sim.profilesets.results;
 
@@ -37,10 +39,6 @@ export function parseProfileset(
     if (filterCulled && r.culled === true) return false;
     return true;
   });
-
-  const baselineDps = filtered.length > 0
-    ? Math.min(...filtered.map(r => r.mean))
-    : data.sim.players[0].collected_data.dps.mean;
 
   const entries: ChartEntry[] = filtered.map(r => {
     const gear = r.overrides.gear!;

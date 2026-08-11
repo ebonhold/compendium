@@ -64,12 +64,24 @@ session.
 
 ## Baseline Identification
 
-The baseline DPS for each chart is the `mean` of the entry with the lowest DPS
-among all displayed entries (after filtering). All deltas are relative to this
-minimum entry, so the lowest entry always has delta = 0.
+The baseline DPS is the player DPS of a dedicated single-actor sim,
+`public/data/baseline.json`:
 
-A result is the "baseline profileset" when `overrides.gear` is absent or empty.
-The baseline profileset is excluded from the chart.
+```
+baseline_mean = baseline.sim.players[0].collected_data.dps.mean
+```
+
+That file contains no `profilesets` block. It is fetched once per session and
+shared by every tab, so the same comparison point applies across all charts and
+bars are directly comparable between categories.
+
+For the baseline to be meaningful, `baseline.json` must be simmed with the same
+fight style, fight length, talents, and target count as the profileset files —
+otherwise the deltas measure the difference between two sim configurations
+rather than the effect of the gear.
+
+Within a profileset file, a result is the "baseline profileset" when
+`overrides.gear` is absent or empty. It is still excluded from the chart.
 
 ## Delta Calculation
 
@@ -87,7 +99,8 @@ delta = result.mean - baseline_mean
 ## Chart Specification
 
 - Type: horizontal bar chart (`layout="vertical"` in Recharts)
-- X-axis: Percent difference relative to the lowest-DPS entry (e.g. `+1.23%`). The lowest entry sits at 0%.
+- X-axis: Percent difference relative to the baseline sim (e.g. `+1.23%`). The
+  0% line is the baseline; entries below it read negative.
 - Each bar displays a label showing its absolute DPS value (e.g. `312,450`).
 - Y-axis: resolved item name(s), or `item_id` as fallback
 - Bars sorted by delta **descending** (highest dps at top)

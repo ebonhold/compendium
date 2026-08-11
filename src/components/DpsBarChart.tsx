@@ -14,10 +14,14 @@ import type { ChartEntry, ChartItemRef } from '../lib/parseProfileset';
 import styles from '../styles/DpsBarChart.module.css';
 
 const Y_AXIS_WIDTH = 280;
-const LINE_HEIGHT = 18;
+const LINE_HEIGHT = 22;
 // Keep in sync with the .yTick padding in DpsBarChart.module.css — this is
 // the visible gap between rows, since adjacent rows' foreignObjects are flush.
-const ROW_GAP = 6;
+const ROW_GAP = 8;
+
+// Deltas are measured against a separate baseline sim rather than the weakest
+// bar, so a profileset can land below it and read negative.
+const formatPercent = (v: number) => `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`;
 
 interface YTickProps {
   x?: number;
@@ -149,8 +153,8 @@ export function DpsBarChart({ entries }: Props) {
         <CartesianGrid strokeDasharray="3 3" horizontal={false} />
         <XAxis
           type="number"
-          domain={[0, 'auto']}
-          tickFormatter={v => `+${v.toFixed(2)}%`}
+          domain={['auto', 'auto']}
+          tickFormatter={formatPercent}
           orientation="top"
         />
         <YAxis
@@ -164,8 +168,8 @@ export function DpsBarChart({ entries }: Props) {
             const pct = props.payload?.percentDiff ?? 0;
             const abs = props.payload?.absoluteDps ?? 0;
             return [
-              `+${pct.toFixed(2)}% (${Math.round(abs).toLocaleString()} DPS)`,
-              'Delta',
+              `${formatPercent(pct)} (${Math.round(abs).toLocaleString()} DPS)`,
+              'vs baseline',
             ];
           }}
         />

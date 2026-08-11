@@ -14,6 +14,17 @@ export interface ProfilesetResult {
   iterations: number;
 }
 
+/**
+ * A single-actor sim with no profilesets — public/data/baseline.json. Its
+ * player DPS is the point of comparison every profileset delta is measured
+ * against.
+ */
+export interface BaselineFile {
+  sim: {
+    players: [{ collected_data: { dps: { mean: number } } }];
+  };
+}
+
 export interface SimcraftFile {
   sim: {
     options: { profileset_metric: string };

@@ -55,10 +55,15 @@ rendered by [DpsBarChart](src/components/DpsBarChart.tsx) (Recharts).
   `yarn fetch-item-names` (scrapes the Wowhead XML feed; adds new IDs found in
   the file as `Item <id>` placeholders that need names resolved via a refetch).
 - **Baseline/delta semantics** (see requirements.md for full detail): the
-  baseline profileset (no `overrides.gear`) is always excluded from the chart;
-  the displayed baseline DPS is the *minimum* mean among the remaining
-  (filtered) entries, and every bar's delta/percent is relative to that
-  minimum — so the lowest bar always reads 0%.
+  baseline DPS comes from `public/data/baseline.json`, a dedicated single-actor
+  sim with no `profilesets` block, loaded once per session by
+  [baseline.ts](src/lib/baseline.ts) and shared by every tab. Every bar's
+  delta/percent is relative to it, so bars are comparable across categories and
+  a profileset weaker than baseline reads negative. Within each profileset file
+  the baseline profileset (no `overrides.gear`) is still excluded from the
+  chart. `baseline.json` must be simmed with the same fight style, length,
+  talents, and target count as the profileset files or the deltas are
+  meaningless.
 - **Styling** is CSS Modules, one stylesheet per component (`src/styles/*.module.css`).
 
 ## Deployment
