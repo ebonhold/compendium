@@ -24,7 +24,7 @@ const existing = new Map(
     .map(m => [Number(m[1]), JSON.parse(m[2])]),
 );
 const missingOnly = process.argv.includes('--missing');
-const isPlaceholder = (id, name) => name === `Item ${id}`;
+const isPlaceholder = (id, name) => name === ``;
 const ids = missingOnly
   ? [...existing].filter(([id, name]) => isPlaceholder(id, name)).map(([id]) => id)
   : [...existing.keys()];
@@ -68,7 +68,7 @@ for (const id of ids) {
   } catch (err) {
     // Keep whatever the file already had rather than clobbering a good name
     // with a placeholder because of a transient Wowhead failure.
-    const kept = existing.get(id) ?? `Item ${id}`;
+    const kept = existing.get(id) ?? ``;
     resolved.set(id, kept);
     failures++;
     console.warn(`  ${id} → FAILED (${err.message}) — kept ${JSON.stringify(kept)}`);

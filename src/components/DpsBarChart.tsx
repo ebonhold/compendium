@@ -163,16 +163,6 @@ export function DpsBarChart({ entries }: Props) {
           width={Y_AXIS_WIDTH}
           tick={<WowheadYTick entries={entries} rowHeight={rowHeight} />}
         />
-        <Tooltip
-          formatter={(_: number, __: string, props: { payload?: { percentDiff?: number; absoluteDps?: number } }) => {
-            const pct = props.payload?.percentDiff ?? 0;
-            const abs = props.payload?.absoluteDps ?? 0;
-            return [
-              `${formatPercent(pct)} (${Math.round(abs).toLocaleString()} DPS)`,
-              'vs baseline',
-            ];
-          }}
-        />
         <ReferenceLine x={0} stroke="#888" strokeDasharray="4 2" />
         <Bar dataKey="percentDiff" isAnimationActive={false} barSize={18} shape={<DeltaBar />}>
           <LabelList

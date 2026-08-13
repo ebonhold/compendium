@@ -59,7 +59,7 @@ if (missing.length === 0) {
   process.exit(0);
 }
 
-for (const id of missing) entries.set(id, `Item ${id}`);
+for (const id of missing) entries.set(id, ``);
 
 const serialized = [...entries.entries()]
   .sort((a, b) => a[0] - b[0])
