@@ -64,30 +64,37 @@ session.
 
 ## Baseline Identification
 
-The baseline DPS is the player DPS of a dedicated single-actor sim,
-`public/data/baseline.json`:
+`public/data/baseline.json` is the **best known profile** — a dedicated
+single-actor sim of the strongest gear setup found so far. Its player DPS is the
+target every profileset is scored against:
 
 ```
 baseline_mean = baseline.sim.players[0].collected_data.dps.mean
 ```
 
 That file contains no `profilesets` block. It is fetched once per session and
-shared by every tab, so the same comparison point applies across all charts and
-bars are directly comparable between categories.
+shared by every tab, so the same target applies across all charts and bars are
+directly comparable between categories.
 
-For the baseline to be meaningful, `baseline.json` must be simmed with the same
+For the score to be meaningful, `baseline.json` must be simmed with the same
 fight style, fight length, talents, and target count as the profileset files —
-otherwise the deltas measure the difference between two sim configurations
-rather than the effect of the gear.
+otherwise it measures the difference between two sim configurations rather than
+the effect of the gear.
 
 Within a profileset file, a result is the "baseline profileset" when
 `overrides.gear` is absent or empty. It is still excluded from the chart.
 
-## Delta Calculation
+## Score Calculation
+
+Entries are ranked by how close they get to the baseline profile, expressed as a
+percentage of it:
 
 ```
-delta = result.mean - baseline_mean
+percent_of_baseline = (result.mean / baseline_mean) * 100
 ```
+
+The best entry sits at or near 100%. A value above 100% means that profileset
+beats the best known profile, and is a signal that `baseline.json` is stale.
 
 ## Culled Entry Handling
 
@@ -99,11 +106,15 @@ delta = result.mean - baseline_mean
 ## Chart Specification
 
 - Type: horizontal bar chart (`layout="vertical"` in Recharts)
-- X-axis: Percent difference relative to the baseline sim (e.g. `+1.23%`). The
-  0% line is the baseline; entries below it read negative.
-- Each bar displays a label showing its absolute DPS value (e.g. `312,450`).
+- X-axis: percent of the baseline profile (e.g. `99.42%`). The axis runs from a
+  round number just below the weakest entry to `max(100%, best entry)` — it does
+  **not** start at 0, which would make every bar look nearly full. A dashed
+  reference line marks 100%.
+- Each bar displays a label showing its percent of baseline (e.g. `99.42%`).
+- Bar fill is neutral for entries below the baseline (the normal case) and green
+  for any entry at or above 100%.
 - Y-axis: resolved item name(s), or `item_id` as fallback
-- Bars sorted by delta **descending** (highest dps at top)
+- Bars sorted by percent of baseline **descending** (highest dps at top)
 - No error bars
 - Dynamic height: `Math.max(300, entryCount * 28)` px; wrapper scrollable
 

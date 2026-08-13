@@ -28,10 +28,12 @@
   font-size: 0.6875rem;
 }
 
-.barPositive {
-  fill: #4caf50;
+/* The ordinary case: falls short of the best known profile. */
+.barNeutral {
+  fill: #5b8dd6;
 }
 
-.barNegative {
-  fill: #f44336;
+/* Matches or beats the baseline profile — worth a second look. */
+.barPositive {
+  fill: #4caf50;
 }

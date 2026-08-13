@@ -54,16 +54,18 @@ rendered by [DpsBarChart](src/components/DpsBarChart.tsx) (Recharts).
   any component. `itemNames.ts` is generated data — don't hand-edit it, use
   `yarn fetch-item-names` (scrapes the Wowhead XML feed; adds new IDs found in
   the file as `Item <id>` placeholders that need names resolved via a refetch).
-- **Baseline/delta semantics** (see requirements.md for full detail): the
-  baseline DPS comes from `public/data/baseline.json`, a dedicated single-actor
-  sim with no `profilesets` block, loaded once per session by
-  [baseline.ts](src/lib/baseline.ts) and shared by every tab. Every bar's
-  delta/percent is relative to it, so bars are comparable across categories and
-  a profileset weaker than baseline reads negative. Within each profileset file
+- **Baseline/score semantics** (see requirements.md for full detail):
+  `public/data/baseline.json` is the *best known profile* — a single-actor sim
+  with no `profilesets` block, loaded once per session by
+  [baseline.ts](src/lib/baseline.ts) and shared by every tab. Each bar is scored
+  as `percentOfBaseline = mean / baselineDps * 100`, so the strongest entry sits
+  near 100% and bars are comparable across categories; anything over 100% beats
+  the baseline and means `baseline.json` is stale. Within each profileset file
   the baseline profileset (no `overrides.gear`) is still excluded from the
   chart. `baseline.json` must be simmed with the same fight style, length,
-  talents, and target count as the profileset files or the deltas are
-  meaningless.
+  talents, and target count as the profileset files or the scores are
+  meaningless. The X-axis deliberately does not start at 0 — see `axisFloor` in
+  `DpsBarChart.tsx`.
 - **Styling** is CSS Modules, one stylesheet per component (`src/styles/*.module.css`).
 
 ## Deployment

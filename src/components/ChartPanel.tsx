@@ -25,8 +25,7 @@ export function ChartPanel({ config }: Props) {
   return (
     <div className={styles.panel}>
       <p className={styles.meta}>
-        Baseline: <strong>{data.baselineDps.toFixed(0)} DPS</strong>
-        &ensp;·&ensp;{data.entries.length} entries
+        {data.entries.length} entries
       </p>
       <DpsBarChart entries={data.entries} />
     </div>

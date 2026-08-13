@@ -5,7 +5,6 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
   ReferenceLine,
   LabelList,
   Rectangle,
@@ -19,9 +18,23 @@ const LINE_HEIGHT = 22;
 // the visible gap between rows, since adjacent rows' foreignObjects are flush.
 const ROW_GAP = 8;
 
-// Deltas are measured against a separate baseline sim rather than the weakest
-// bar, so a profileset can land below it and read negative.
-const formatPercent = (v: number) => `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`;
+// Every bar is scored as a percentage of the best-known-profile baseline, so the
+// strongest entry sits at (or just past) 100%.
+const formatPercent = (v: number) => `${v.toFixed(2)}%`;
+
+const FLOOR_STEPS = [0.5, 1, 2.5, 5, 10, 25];
+
+/**
+ * Round number to anchor the left edge of the axis. Starting at 0 would make
+ * every bar look nearly full; starting exactly at the weakest entry would give
+ * it zero width. Flooring to a step scaled off the spread keeps the shortest bar
+ * visible whether entries span 0.3% or 20%.
+ */
+function axisFloor(minPercent: number): number {
+  const span = Math.max(100 - minPercent, 0.5);
+  const step = FLOOR_STEPS.find(s => s >= span / 3) ?? FLOOR_STEPS[FLOOR_STEPS.length - 1];
+  return Math.max(0, Math.floor(minPercent / step) * step);
+}
 
 interface YTickProps {
   x?: number;
@@ -97,14 +110,17 @@ interface BarShapeProps {
 }
 
 function DeltaBar({ x = 0, y = 0, width = 0, height = 0, payload }: BarShapeProps) {
-  const positive = (payload?.delta ?? 0) >= 0;
+  // Almost everything falls short of the best known profile, so shortfall is the
+  // normal case and gets the neutral fill. Green is reserved for an entry that
+  // matches or beats the baseline — a sign the baseline profile is out of date.
+  const meetsBaseline = (payload?.percentOfBaseline ?? 0) >= 100;
   return (
     <Rectangle
       x={x}
       y={y}
       width={Math.max(0, width)}
       height={Math.max(0, height)}
-      className={positive ? styles.barPositive : styles.barNegative}
+      className={meetsBaseline ? styles.barPositive : styles.barNeutral}
     />
   );
 }
@@ -141,6 +157,11 @@ export function DpsBarChart({ entries }: Props) {
   const chartHeight = Math.max(300, entries.length * rowHeight);
   const chartData = entries;
 
+  // Entries are sorted descending, so the ends of the array bound the scale.
+  const percents = entries.map(e => e.percentOfBaseline);
+  const floor = axisFloor(Math.min(100, ...percents));
+  const ceiling = Math.max(100, ...percents);
+
   return (
     <div ref={containerRef} className={styles.container}>
       <BarChart
@@ -153,7 +174,7 @@ export function DpsBarChart({ entries }: Props) {
         <CartesianGrid strokeDasharray="3 3" horizontal={false} />
         <XAxis
           type="number"
-          domain={['auto', 'auto']}
+          domain={[floor, ceiling]}
           tickFormatter={formatPercent}
           orientation="top"
         />
@@ -163,13 +184,20 @@ export function DpsBarChart({ entries }: Props) {
           width={Y_AXIS_WIDTH}
           tick={<WowheadYTick entries={entries} rowHeight={rowHeight} />}
         />
-        <ReferenceLine x={0} stroke="#888" strokeDasharray="4 2" />
-        <Bar dataKey="percentDiff" isAnimationActive={false} barSize={18} shape={<DeltaBar />}>
+        <ReferenceLine x={100} stroke="#888" strokeDasharray="4 2" />
+        {/* Recharts anchors bars at the axis domain's lower bound when the
+            domain does not span zero, so `floor` is already the bar base. */}
+        <Bar
+          dataKey="percentOfBaseline"
+          isAnimationActive={false}
+          barSize={18}
+          shape={<DeltaBar />}
+        >
           <LabelList
-            dataKey="absoluteDps"
+            dataKey="percentOfBaseline"
             position="right"
             className={styles.dpsLabel}
-            formatter={(v: number) => Math.round(v).toLocaleString()}
+            formatter={formatPercent}
           />
         </Bar>
       </BarChart>

@@ -14,7 +14,8 @@ export interface ChartEntry {
   label: string;
   items: ChartItemRef[];
   delta: number;
-  percentDiff: number;
+  /** How close this profileset gets to the baseline profile, as a percentage of it. */
+  percentOfBaseline: number;
   absoluteDps: number;
   culled: boolean;
 }
@@ -28,7 +29,7 @@ export function parseProfileset(
   data: SimcraftFile,
   resolver: ItemNameResolver,
   filterCulled: boolean,
-  /** DPS of the single-actor baseline sim; every delta is measured against it. */
+  /** DPS of the best-known-profile sim; every entry is scored as a percentage of it. */
   baselineDps: number,
 ): ParsedProfileset {
   const results = data.sim.profilesets.results;
@@ -52,12 +53,12 @@ export function parseProfileset(
       label: label,
       items,
       delta: r.mean - baselineDps,
-      percentDiff: ((r.mean - baselineDps) / baselineDps) * 100,
+      percentOfBaseline: baselineDps > 0 ? (r.mean / baselineDps) * 100 : 0,
       absoluteDps: r.mean,
       culled: r.culled ?? false,
     };
   });
 
-  entries.sort((a, b) => b.delta - a.delta);
+  entries.sort((a, b) => b.percentOfBaseline - a.percentOfBaseline);
   return { baselineDps, entries };
 }
