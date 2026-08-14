@@ -1,14 +1,16 @@
 import { useProfilesetData } from '../lib/useProfilesetData';
 import type { TabConfig } from '../lib/tabs';
+import type { DatasetConfig } from '../lib/datasets';
 import { DpsBarChart } from './DpsBarChart';
 import styles from '../styles/ChartPanel.module.css';
 
 interface Props {
   config: TabConfig;
+  dataset: DatasetConfig;
 }
 
-export function ChartPanel({ config }: Props) {
-  const { data, loading, error } = useProfilesetData(config);
+export function ChartPanel({ config, dataset }: Props) {
+  const { data, loading, error } = useProfilesetData(config, dataset);
 
   if (loading) {
     return <div className={styles.status}>Loading {config.label}…</div>;

@@ -28,7 +28,19 @@ console.log(`src/data/itemNames.ts currently holds ${entries.size} item IDs.`);
 
 // ── Collect every gear item ID in the profileset files ───────────────────────
 
-const files = readdirSync(DATA_DIR).filter(f => f.endsWith('.json')).sort();
+// public/data holds one subfolder per dataset (rider/, db/). Descend a level,
+// while still tolerating JSON sitting directly in public/data.
+const files = readdirSync(DATA_DIR, { withFileTypes: true })
+  .flatMap(entry => {
+    if (entry.isDirectory()) {
+      return readdirSync(join(DATA_DIR, entry.name))
+        .filter(f => f.endsWith('.json'))
+        .map(f => join(entry.name, f));
+    }
+    return entry.name.endsWith('.json') ? [entry.name] : [];
+  })
+  .sort();
+
 const seen = new Set();
 
 for (const file of files) {

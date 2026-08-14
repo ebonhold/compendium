@@ -23,7 +23,17 @@ lines.
 
 ## Data Sources
 
-Six JSON files served as static assets from `public/data/`:
+Data is split by hero talent tree into one subfolder per dataset under
+`public/data/`, selected by a top-level toggle:
+
+| Folder   | Toggle Label             |
+|----------|--------------------------|
+| `rider/` | Riders of the Apocalypse |
+| `db/`    | Deathbringer             |
+
+Each folder holds the same six category files, plus its own `baseline.json`
+(see Baseline Identification). Six JSON files per dataset, served as static
+assets:
 
 | File               | Tab Label      | Filter Rule             |
 |--------------------|----------------|-------------------------|
@@ -34,8 +44,9 @@ Six JSON files served as static assets from `public/data/`:
 | trinkets_1.json    | Trinkets       | All entries             |
 | weapons_1.json     | Weapons        | All entries             |
 
-Files are fetched lazily when their tab is first activated and cached for the
-session.
+Files are fetched lazily when their dataset+tab combination is first activated
+and cached for the session, keyed on both. Switching datasets keeps the current
+category tab selected.
 
 ## JSON Data Contract
 
@@ -64,7 +75,7 @@ session.
 
 ## Baseline Identification
 
-`public/data/baseline.json` is the **best known profile** — a dedicated
+`public/data/<dataset>/baseline.json` is that dataset's **best known profile** — a dedicated
 single-actor sim of the strongest gear setup found so far. Its player DPS is the
 target every profileset is scored against:
 

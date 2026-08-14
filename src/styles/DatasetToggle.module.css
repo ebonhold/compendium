@@ -1,0 +1,48 @@
+/*
+ * A segmented button group, styled to stay clearly distinct from TabBar: rounded
+ * and outlined rather than square with a red underline, and a muted active fill
+ * rather than the tab strip's #C41E3A.
+ */
+.toggle {
+  display: inline-flex;
+  align-self: flex-start;
+  margin: 16px 0 4px;
+  border: 1px solid #3a3a4a;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #16161f;
+}
+
+.option {
+  padding: 6px 16px;
+  border: none;
+  background: transparent;
+  color: #9a9aa8;
+  font: inherit;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+
+.option + .option {
+  border-left: 1px solid #3a3a4a;
+}
+
+.option:hover:not(.selected) {
+  background: #20202c;
+  color: #e2e2e2;
+}
+
+.option:focus-visible {
+  outline: 2px solid #63c9e6;
+  outline-offset: -2px;
+}
+
+.selected {
+  background: #2c2c3c;
+  color: #f0f0f0;
+  font-weight: 600;
+  cursor: default;
+}
