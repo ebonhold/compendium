@@ -48,7 +48,7 @@ export function App() {
             const active = dataset.id === activeDataset && tab.id === activeTab;
             return (
               <div key={key} className={active ? styles.panelActive : styles.panelHidden}>
-                <ChartPanel config={tab} dataset={dataset} />
+                <ChartPanel config={tab} dataset={dataset} active={active} />
               </div>
             );
           }),

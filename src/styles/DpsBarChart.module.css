@@ -28,6 +28,14 @@
   font-size: 0.6875rem;
 }
 
+/* Bottom-of-list marker that doubles as the scroll trigger for the next page. */
+.sentinel {
+  padding: 16px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #888;
+}
+
 /* The ordinary case: falls short of the best known profile. */
 .barNeutral {
   fill: #5b8dd6;

@@ -6,7 +6,7 @@ export interface TabConfig {
 }
 
 export const TABS: TabConfig[] = [
-  { id: 'embellishments', label: 'Embellishments', filename: 'embellished_1.json', filterCulled: true },
+  { id: 'embellishments', label: 'Embellishments', filename: 'embellished_1.json', filterCulled: false },
   { id: 'jewelry',        label: 'Jewelry',        filename: 'jewelry_1.json',     filterCulled: false },
   { id: 'other',          label: 'Other',          filename: 'other_1.json',       filterCulled: false },
   { id: 'tier-set',       label: 'Tier Set',       filename: 'tier_set_1.json',    filterCulled: false },

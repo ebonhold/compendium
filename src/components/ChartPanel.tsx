@@ -7,9 +7,11 @@ import styles from '../styles/ChartPanel.module.css';
 interface Props {
   config: TabConfig;
   dataset: DatasetConfig;
+  /** Passed through to the chart, which only pages in more rows while on screen. */
+  active: boolean;
 }
 
-export function ChartPanel({ config, dataset }: Props) {
+export function ChartPanel({ config, dataset, active }: Props) {
   const { data, loading, error } = useProfilesetData(config, dataset);
 
   if (loading) {
@@ -29,7 +31,7 @@ export function ChartPanel({ config, dataset }: Props) {
       <p className={styles.meta}>
         {data.entries.length} entries
       </p>
-      <DpsBarChart entries={data.entries} />
+      <DpsBarChart entries={data.entries} active={active} />
     </div>
   );
 }

@@ -22,6 +22,14 @@ const ROW_GAP = 8;
 // strongest entry sits at (or just past) 100%.
 const formatPercent = (v: number) => `${v.toFixed(2)}%`;
 
+// Each row renders a foreignObject holding a Wowhead link per item, so a
+// 2700-row category would build several thousand live DOM nodes before first
+// paint. Rows arrive a page at a time instead, and the chart grows as it scrolls.
+const PAGE_SIZE = 50;
+// Grow before the sentinel is actually reached, so scrolling never stalls at the
+// bottom waiting on a render.
+const PRELOAD_MARGIN_PX = 400;
+
 const FLOOR_STEPS = [0.5, 1, 2.5, 5, 10, 25];
 
 /**
@@ -129,13 +137,21 @@ function DeltaBar({ x = 0, y = 0, width = 0, height = 0, payload }: BarShapeProp
 
 interface Props {
   entries: ChartEntry[];
+  /**
+   * Whether this chart's panel is the one on screen. Hidden panels are only
+   * `visibility: hidden`, so they still have layout and their sentinel would
+   * otherwise keep paging rows in off-screen — the exact cost paging avoids.
+   */
+  active: boolean;
 }
 
 declare const $WowheadPower: { refreshLinks: () => void } | undefined;
 
-export function DpsBarChart({ entries }: Props) {
+export function DpsBarChart({ entries, active }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(950);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -149,15 +165,46 @@ export function DpsBarChart({ entries }: Props) {
   }, []);
 
   useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [entries]);
+
+  const hasMore = visibleCount < entries.length;
+
+  // Re-created on every page rather than left running: the sentinel usually
+  // stays intersecting after rows are appended, and IntersectionObserver only
+  // reports *changes* — a persistent observer would fire once and then stall.
+  // A fresh observer re-reports on attach, so pages chain until the sentinel
+  // is pushed out of range.
+  useEffect(() => {
+    const root = containerRef.current;
+    const sentinel = sentinelRef.current;
+    if (!active || !hasMore || !root || !sentinel) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisibleCount(c => Math.min(c + PAGE_SIZE, entries.length));
+        }
+      },
+      { root, rootMargin: `0px 0px ${PRELOAD_MARGIN_PX}px 0px` },
+    );
+    obs.observe(sentinel);
+    return () => obs.disconnect();
+  }, [active, hasMore, visibleCount, entries.length]);
+
+  useEffect(() => {
     if (typeof $WowheadPower !== 'undefined') {
       $WowheadPower.refreshLinks();
     }
-  }, [entries]);
+  }, [entries, visibleCount]);
 
+  const chartData = entries.slice(0, visibleCount);
+
+  // Row height and axis bounds are derived from the *whole* set, not the loaded
+  // slice, so neither the row rhythm nor the scale shifts underneath the user as
+  // later pages arrive.
   const maxItems = Math.max(1, ...entries.map(e => e.items.length));
   const rowHeight = Math.max(40, maxItems * LINE_HEIGHT + ROW_GAP * 2);
-  const chartHeight = Math.max(300, entries.length * rowHeight);
-  const chartData = entries;
+  const chartHeight = Math.max(300, chartData.length * rowHeight);
 
   // Entries are sorted descending, so the ends of the array bound the scale.
   const percents = entries.map(e => e.percentOfBaseline);
@@ -184,7 +231,7 @@ export function DpsBarChart({ entries }: Props) {
           type="category"
           dataKey="id"
           width={Y_AXIS_WIDTH}
-          tick={<WowheadYTick entries={entries} rowHeight={rowHeight} />}
+          tick={<WowheadYTick entries={chartData} rowHeight={rowHeight} />}
         />
         <ReferenceLine x={100} stroke="#888" strokeDasharray="4 2" />
         {/* Recharts anchors bars at the axis domain's lower bound when the
@@ -203,6 +250,11 @@ export function DpsBarChart({ entries }: Props) {
           />
         </Bar>
       </BarChart>
+      {hasMore && (
+        <div ref={sentinelRef} className={styles.sentinel}>
+          Loading more… {chartData.length} of {entries.length}
+        </div>
+      )}
     </div>
   );
 }
