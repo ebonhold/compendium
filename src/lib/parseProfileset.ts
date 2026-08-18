@@ -11,6 +11,13 @@ export interface ChartItemRef {
 }
 
 export interface ChartEntry {
+  /**
+   * The SimulationCraft profileset name — unique within a file, so it is what
+   * identifies a row. Gear contents cannot serve as an identity: tier-set
+   * profilesets differ only by each slot's `redirected_base_stats_id`, and some
+   * trinket profilesets share byte-identical gear entirely.
+   */
+  id: string;
   label: string;
   items: ChartItemRef[];
   delta: number;
@@ -48,9 +55,10 @@ export function parseProfileset(
       const name = resolver.resolve(item.item_id) ?? String(item.item_id);
       items.push({ itemId: item.item_id, itemLevel: item.item_level, name, bonusId: item.bonus_id, gemId: item.gem_id, enchantId: item.enchant_id });
     }
-    const label = items.map(i => i.name + ` (${i.itemLevel})` + i.bonusId + i.enchantId).join(' + ');
+    const label = items.map(i => `${i.name} (${i.itemLevel})`).join(' + ');
     return {
-      label: label,
+      id: r.name,
+      label,
       items,
       delta: r.mean - baselineDps,
       percentOfBaseline: baselineDps > 0 ? (r.mean / baselineDps) * 100 : 0,

@@ -72,12 +72,14 @@ function WowheadYTick({ x = 0, y = 0, payload, entries, rowHeight }: YTickProps)
 
   const renderItems = (items: ChartItemRef[]) => {
     const prefix = sharedNamePrefix(items);
-    return items.map(item => {
+    return items.map((item, index) => {
       const name = prefix && item.name.startsWith(`${prefix} `) && item.name.length > 29
         ? item.name.slice(prefix.length + 1)
         : item.name;
       return (
-        <div key={item.itemId} className={styles.yTickLine}>
+        // Not keyed on itemId alone — a row can hold the same item in both
+        // finger slots. Position within the row is stable, so index completes it.
+        <div key={`${item.itemId}-${index}`} className={styles.yTickLine}>
           <a
             href={`https://www.wowhead.com/item=${item.itemId}?bonus=${item.bonusId?.join(':')}`}
             title={`${item.name} (${item.itemLevel})`}
@@ -180,7 +182,7 @@ export function DpsBarChart({ entries }: Props) {
         />
         <YAxis
           type="category"
-          dataKey="label"
+          dataKey="id"
           width={Y_AXIS_WIDTH}
           tick={<WowheadYTick entries={entries} rowHeight={rowHeight} />}
         />
