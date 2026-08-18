@@ -68,12 +68,12 @@ function sharedNamePrefix(items: ChartItemRef[]): string | null {
 }
 
 function WowheadYTick({ x = 0, y = 0, payload, entries, rowHeight }: YTickProps) {
-  const entry = entries.find(e => e.label === payload?.value);
+  const entry = entries.find(e => e.id === payload?.value);
 
   const renderItems = (items: ChartItemRef[]) => {
     const prefix = sharedNamePrefix(items);
     return items.map(item => {
-      const name = prefix && item.name.startsWith(`${prefix} `)
+      const name = prefix && item.name.startsWith(`${prefix} `) && item.name.length > 29
         ? item.name.slice(prefix.length + 1)
         : item.name;
       return (
