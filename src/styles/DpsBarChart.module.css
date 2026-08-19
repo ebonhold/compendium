@@ -24,6 +24,11 @@
   text-overflow: ellipsis;
 }
 
+/* The catalyst source item — secondary to the piece actually equipped. */
+.baseItem {
+  color: #8a8a9a;
+}
+
 .dpsLabel {
   font-size: 0.6875rem;
 }

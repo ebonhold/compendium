@@ -51,6 +51,9 @@ for (const file of files) {
   for (const result of results) {
     for (const item of Object.values(result.overrides?.gear ?? {})) {
       if (typeof item?.item_id === 'number') seen.add(item.item_id);
+      // Catalyst-converted pieces name a second item — the one supplying their
+      // base stats — which the chart labels too. `0` means "not converted".
+      if (item?.redirected_base_stats_id) seen.add(item.redirected_base_stats_id);
     }
   }
 

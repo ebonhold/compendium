@@ -4,6 +4,12 @@ export interface GearItem {
   bonus_id?: number[];
   gem_id?: number;
   enchant_id?: number;
+  /**
+   * For a catalyst-converted piece, the item whose base stats it retains.
+   * SimulationCraft writes the key on every gear entry and uses `0` to mean
+   * "not converted", so a plain presence check is not enough.
+   */
+  redirected_base_stats_id?: number;
 }
 
 export interface ProfilesetResult {

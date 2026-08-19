@@ -8,6 +8,9 @@ export interface ChartItemRef {
   bonusId?: number[];
   gemId?: number;
   enchantId?: number;
+  /** Set only for catalyst-converted pieces: the item supplying the base stats. */
+  baseItemId?: number;
+  baseName?: string;
 }
 
 export interface ChartEntry {
@@ -53,7 +56,11 @@ export function parseProfileset(
     const items: ChartItemRef[] = [];
     for (const item of Object.values(gear)) {
       const name = resolver.resolve(item.item_id) ?? String(item.item_id);
-      items.push({ itemId: item.item_id, itemLevel: item.item_level, name, bonusId: item.bonus_id, gemId: item.gem_id, enchantId: item.enchant_id });
+      // `0` is SimulationCraft's "not catalyst-converted" sentinel, so coerce it
+      // away rather than testing for the key's presence — it is always present.
+      const baseItemId = item.redirected_base_stats_id || undefined;
+      const baseName = baseItemId ? resolver.resolve(baseItemId) ?? String(baseItemId) : undefined;
+      items.push({ itemId: item.item_id, itemLevel: item.item_level, name, bonusId: item.bonus_id, gemId: item.gem_id, enchantId: item.enchant_id, baseItemId, baseName });
     }
     const label = items.map(i => `${i.name} (${i.itemLevel})`).join(' + ');
     return {

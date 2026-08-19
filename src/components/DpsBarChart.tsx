@@ -13,6 +13,13 @@ import type { ChartEntry, ChartItemRef } from '../lib/parseProfileset';
 import styles from '../styles/DpsBarChart.module.css';
 
 const Y_AXIS_WIDTH = 280;
+// A catalyst source roughly doubles a line's text ("Casque (334)" becomes
+// "Casque (334) | (Skullguard of the Risen Sacrifice)"), which overruns the
+// narrow axis and ellipsises away the very thing the base item is there to show.
+// Keyed off the data rather than the tab, so any category carrying conversions
+// gets the room. Sized against the longest measured line plus headroom, counting
+// the icon Wowhead prepends to each link (whTooltips.iconizeLinks in index.html).
+const Y_AXIS_WIDTH_WITH_BASE = 580;
 const LINE_HEIGHT = 22;
 // Keep in sync with the .yTick padding in DpsBarChart.module.css — this is
 // the visible gap between rows, since adjacent rows' foreignObjects are flush.
@@ -50,6 +57,7 @@ interface YTickProps {
   payload?: { value: string };
   entries: ChartEntry[];
   rowHeight: number;
+  axisWidth: number;
 }
 
 // Items in a row often share a leading set-name, e.g. "Relentless Rider's Crown"
@@ -75,7 +83,7 @@ function sharedNamePrefix(items: ChartItemRef[]): string | null {
   return best;
 }
 
-function WowheadYTick({ x = 0, y = 0, payload, entries, rowHeight }: YTickProps) {
+function WowheadYTick({ x = 0, y = 0, payload, entries, rowHeight, axisWidth }: YTickProps) {
   const entry = entries.find(e => e.id === payload?.value);
 
   const renderItems = (items: ChartItemRef[]) => {
@@ -84,16 +92,28 @@ function WowheadYTick({ x = 0, y = 0, payload, entries, rowHeight }: YTickProps)
       const name = prefix && item.name.startsWith(`${prefix} `) && item.name.length > 29
         ? item.name.slice(prefix.length + 1)
         : item.name;
+      const full = item.baseName
+        ? `${item.name} (${item.baseName})`
+        : `${item.name} `;
       return (
         // Not keyed on itemId alone — a row can hold the same item in both
         // finger slots. Position within the row is stable, so index completes it.
-        <div key={`${item.itemId}-${index}`} className={styles.yTickLine}>
+        <div key={`${item.itemId}-${index}`} className={styles.yTickLine} title={full}>
           <a
             href={`https://www.wowhead.com/item=${item.itemId}?bonus=${item.bonusId?.join(':')}`}
-            title={`${item.name} (${item.itemLevel})`}
           >
-            {name} ({item.itemLevel})
+            {name}
           </a>
+          {/* Its own anchor rather than text inside the one above — it is a
+              different item and gets its own tooltip. No bonus params: the JSON
+              gives a bare id for the base stats source, not a full gear entry. */}
+          {item.baseName && (
+            <span className={styles.baseItem}>
+              {' ('}
+              <a href={`https://www.wowhead.com/item=${item.baseItemId}`}>{item.baseName}</a>
+              {')'}
+            </span>
+          )}
         </div>
       );
     });
@@ -101,9 +121,9 @@ function WowheadYTick({ x = 0, y = 0, payload, entries, rowHeight }: YTickProps)
 
   return (
     <foreignObject
-      x={x - Y_AXIS_WIDTH}
+      x={x - axisWidth}
       y={y - rowHeight / 2}
-      width={Y_AXIS_WIDTH}
+      width={axisWidth}
       height={rowHeight}
     >
       <div className={styles.yTick}>{entry ? renderItems(entry.items) : payload?.value}</div>
@@ -205,6 +225,8 @@ export function DpsBarChart({ entries, active }: Props) {
   const maxItems = Math.max(1, ...entries.map(e => e.items.length));
   const rowHeight = Math.max(40, maxItems * LINE_HEIGHT + ROW_GAP * 2);
   const chartHeight = Math.max(300, chartData.length * rowHeight);
+  const hasBaseItems = entries.some(e => e.items.some(i => i.baseName));
+  const axisWidth = hasBaseItems ? Y_AXIS_WIDTH_WITH_BASE : Y_AXIS_WIDTH;
 
   // Entries are sorted descending, so the ends of the array bound the scale.
   const percents = entries.map(e => e.percentOfBaseline);
@@ -230,8 +252,8 @@ export function DpsBarChart({ entries, active }: Props) {
         <YAxis
           type="category"
           dataKey="id"
-          width={Y_AXIS_WIDTH}
-          tick={<WowheadYTick entries={chartData} rowHeight={rowHeight} />}
+          width={axisWidth}
+          tick={<WowheadYTick entries={chartData} rowHeight={rowHeight} axisWidth={axisWidth} />}
         />
         <ReferenceLine x={100} stroke="#888" strokeDasharray="4 2" />
         {/* Recharts anchors bars at the axis domain's lower bound when the
