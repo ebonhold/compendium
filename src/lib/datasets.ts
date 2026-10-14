@@ -10,4 +10,4 @@ export const DATASETS: DatasetConfig[] = [
   { id: 'db',    label: 'Deathbringer',             dir: 'db'    },
 ];
 
-export const DEFAULT_DATASET = DATASETS[0];
+export const DEFAULT_DATASET = DATASETS[1];

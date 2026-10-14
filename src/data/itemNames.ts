@@ -1,4 +1,4 @@
-// Item name map covering all 195 item IDs in the profileset JSON files.
+// Item name map covering all 200 item IDs in the profileset JSON files.
 // Names resolved from the Wowhead XML feed. Regenerate with: node scripts/fetch-item-names.mjs
 export const itemNames: Record<number, string> = {
   49802: "Garfrost's Two-Ton Hammer",
@@ -51,6 +51,7 @@ export const itemNames: Record<number, string> = {
   245750: "Darkmoon Deck: Void",
   245829: "Darkmoon Deck: Hunt",
   245846: "Darkmoon Deck: Rot",
+  246304: "Darkmoon Dominion: Hunt",
   249277: "Bellamy's Final Judgement",
   249281: "Blade of the Final Twilight",
   249295: "Turalyon's False Echo",
@@ -196,4 +197,8 @@ export const itemNames: Record<number, string> = {
   273795: "Coiled Fangstone",
   273796: "Vile Vial of Volatile Venom",
   273797: "Tattered Amani War Banner",
+  280799: "Lu'selama, Light's Justice",
+  281029: "Band of the Swarmcaller",
+  281215: "Twisted Horror's Tendril",
+  281239: "Corroded Hulk's Skullcap",
 };

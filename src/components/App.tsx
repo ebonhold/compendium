@@ -11,9 +11,9 @@ const panelKey = (datasetId: string, tabId: string) => `${datasetId}:${tabId}`;
 
 export function App() {
   const [activeDataset, setActiveDataset] = useState(DEFAULT_DATASET.id);
-  const [activeTab, setActiveTab] = useState(TABS[0].id);
+  const [activeTab, setActiveTab] = useState(TABS[4].id);
   const visitedPanels = useRef<Set<string>>(
-    new Set([panelKey(DEFAULT_DATASET.id, TABS[0].id)]),
+    new Set([panelKey(DEFAULT_DATASET.id, TABS[4].id)]),
   );
 
   const handleTabChange = (tabId: string) => {
